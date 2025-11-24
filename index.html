@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>BookStore App</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        #header, #content, #footer {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="header">Loading header...</div>
+    <div id="content">Loading content...</div>
+    <div id="footer">Loading footer...</div>
+
+    <script>
+        // Function to load PHP content into HTML sections
+        function loadSection(url, target) {
+            fetch(url)
+                .then(res => res.text())
+                .then(data => {
+                    document.getElementById(target).innerHTML = data;
+                })
+                .catch(err => {
+                    document.getElementById(target).innerHTML = "Failed to load " + url;
+                });
+        }
+
+        // Load all PHP sections
+        loadSection("header.php", "header");
+        loadSection("index.php", "content");
+        loadSection("footer.php", "footer");
+    </script>
+
+</body>
+</html>
