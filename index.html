@@ -1,144 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <title>BookStore App</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f7f7f7;
-        }
-        #header, #content, #footer {
-            padding: 15px;
-            border-bottom: 1px solid #ddd;
-            background: #fff;
-        }
-        #footer {
-            border-bottom: none;
-            border-top: 1px solid #eee;
-        }
-        .fallback {
-            color: #999;
-            font-size: 0.95em;
-            padding: 5px 0 0 0;
-        }
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            background: #fff;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 8px;
-        }
-        th {
-            background: #f3f3f3;
-        }
-        .btn {
-            padding: 2px 8px;
-            margin: 0 2px;
-            border-radius: 2px;
-            font-size: 0.98em;
-            text-decoration: none;
-        }
-        .btn-warning { background: #ffe082; color: #7a5a00; }
-        .btn-danger  { background: #ff8a80; color: #990003; }
-    </style>
-</head>
-<body>
+<script>
+const PHP_SERVER = "https://mi-linux.wlv.ac.uk/~2415267";
 
-    <div id="header">Loading header...</div>
-    <div id="content">Loading content...</div>
-    <div id="footer">Loading footer...</div>
+// Load sections dynamically
+async function loadPHPPage(page, targetId) {
+    try {
+        const res = await fetch(${PHP_SERVER}/${page});
+        const html = await res.text();
+        document.getElementById(targetId).innerHTML = html;
+    } catch (err) {
+        document.getElementById(targetId).innerHTML = "Failed to load page";
+    }
+}
 
-    <script>
-        // Robust loadSection with fallback
-        function loadSection(url, target, fallbackHtml=null) {
-            fetch(url)
-                .then(res => {
-                    if (!res.ok) throw new Error();
-                    return res.text();
-                })
-                .then(data => {
-                    document.getElementById(target).innerHTML = data;
-                })
-                .catch(() => {
-                    if (fallbackHtml) {
-                        document.getElementById(target).innerHTML = fallbackHtml +
-                          `<div class="fallback">(Could not load ${url}; showing default fallback)</div>`;
-                    } else {
-                        document.getElementById(target).innerHTML =
-                          `<div class="fallback">Could not load ${url} and no default fallback supplied.</div>`;
-                    }
-                });
-        }
+// Load header and footer
+loadPHPPage('header.php', 'header');
+loadPHPPage('footer.php', 'footer');
 
-        // Fallbacks for when .php files are missing (edit these to your taste)
-        const headerFallback = `
-            <h1>BookStore App</h1>
-            <nav>
-                <a href="#">Home</a> |
-                <a href="#">Books</a> |
-                <a href="#">Contact</a>
-            </nav>
-        `;
-        const contentFallback = `
-            <h2>All Books</h2>
-            <table>
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Cover</th>
-                    <th>Title</th>
-                    <th>Author</th>
-                    <th>Genre</th>
-                    <th>Year</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td><img id="cover-1" width="50" height="75" style="object-fit:cover; border:1px solid #ccc;" src="https://via.placeholder.com/50x75?text=Loading..."></td>
-                    <td>The Pragmatic Programmer</td>
-                    <td>Andrew Hunt</td>
-                    <td>Programming</td>
-                    <td>1999</td>
-                    <td>
-                        <a href="#" class="btn btn-warning">Edit</a>
-                        <a href="#" class="btn btn-danger">Delete</a>
-                    </td>
-                  </tr>
-                  <!-- Add more sample rows as needed -->
-                </tbody>
-            </table>
-            <script>
-                async function loadCoversHome() {
-                    const img = document.getElementById('cover-1');
-                    try {
-                        const res = await fetch('https://openlibrary.org/search.json?title=The%20Pragmatic%20Programmer');
-                        const data = await res.json();
-                        const coverId = data.docs?.[0]?.cover_i;
-                        img.src = coverId
-                            ? \`https://covers.openlibrary.org/b/id/\${coverId}-M.jpg\`
-                            : 'https://via.placeholder.com/50x75?text=No+Cover';
-                    } catch {
-                        img.src = 'https://via.placeholder.com/50x75?text=No+Cover';
-                    }
-                }
-                document.addEventListener('DOMContentLoaded', loadCoversHome);
-            <\/script>
-        `;
-        const footerFallback = `
-            <p>&copy; 2025 BookStore App. All rights reserved.</p>
-        `;
+// Navigation
+function showSection(section) {
+    if(section === 'home') loadPHPPage('index.php', 'content');
+    else if(section === 'books') loadPHPPage('books.php', 'content');
+    else if(section === 'about') loadPHPPage('about.php', 'content');
+}
 
-        // Try to load from PHP, otherwise show fallback
-        loadSection("header.php", "header", headerFallback);
-        loadSection("index.php", "content", contentFallback);
-        loadSection("footer.php", "footer", footerFallback);
-    </script>
-
-</body>
-</html>
+// Load home by default
+showSection('home');
+</script>
