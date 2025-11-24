@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8" />
     <title>BookStore App</title>
-
     <style>
         body {
             margin: 0;
@@ -22,10 +21,13 @@
     <div id="footer">Loading footer...</div>
 
     <script>
-        // Function to load PHP content into HTML sections
+        // Function to load PHP-generated HTML into given section
         function loadSection(url, target) {
             fetch(url)
-                .then(res => res.text())
+                .then(res => {
+                    if (!res.ok) throw new Error();
+                    return res.text();
+                })
                 .then(data => {
                     document.getElementById(target).innerHTML = data;
                 })
@@ -34,7 +36,7 @@
                 });
         }
 
-        // Load all PHP sections
+        // Will only work if your server runs PHP!
         loadSection("header.php", "header");
         loadSection("index.php", "content");
         loadSection("footer.php", "footer");
